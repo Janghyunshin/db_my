@@ -10,7 +10,8 @@ create table member (
     indate date default sysdate,
             constraints FK_member_id_tb_zipcode Foreign Key (zipcode) references tb_zipcode (zipcode)
             );
-
+    alter table member drop constraints FK_member_id_tb_zipcode;
+    
 select * from member;
 
 insert into member
@@ -31,6 +32,7 @@ create table tb_zipcode (
     dong varchar2(30),
     bungi varchar2(30)
     );
+alter table tb_zipcode drop constraints PK_tb_zipcode_zipcode;
 
 select * from tb_zipcode;
 
@@ -99,9 +101,26 @@ values (34567, '3000', 'ddddd', 'LARGE', '10', sysdate);
 
 rollback;
 commit;
-select * from orders;
+select * from tb_zipcode;
 
-desc member;
 desc tb_zipcode;
 desc products;
 desc orders;
+
+alter table tb_zipcode
+add (ZIP_SEQ varchar2(30));
+
+alter table tb_zipcode
+modify dong NVARCHAR2(30);
+
+Alter table tb_zipcode
+rename column BUNGI to bunji;
+
+Alter table tb_zipcode
+drop column BUNGI;
+
+rollback;
+
+drop table tb_zipcode;
+
+commit;

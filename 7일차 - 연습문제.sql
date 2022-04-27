@@ -100,13 +100,14 @@ desc EMP_INSERT;
 
 insert into EMP_INSERT (EMP_ID, NAME, SAL, DEPT_ID, HIREDATE)
 values (1111, '신장현', 55555, 10, sysdate);  
-
+commit;
 
 -- 3. EMP_INSERT 테이블에 옆 사람을 추가하되 TO_DATE 함수를 이용해서 입사일을 어제로 입력하시오. 
 insert into EMP_INSERT (EMP_ID, NAME, SAL, DEPT_ID, HIREDATE)
 values (2222, '조승현', 66666, 20, to_date('2022-04-25','YYYY-MM-DD'));
 
 select * from EMP_INSERT;
+commit;
 
 -- 4. employee테이블의 구조와 내용을 복사하여 EMP_COPY란 이름의 테이블을 만드시오. 
 create table EMP_COPY
@@ -115,6 +116,7 @@ select *
 from employee;
 
 select * from EMP_COPY;
+commit;
 
 -- 5. 사원번호가 7788인 사원의 부서번호를 10번으로 수정하시오. [ EMP_COPY 테이블 사용] 
 update EMP_COPY
@@ -146,6 +148,8 @@ create table DEPT_COPY
 as
 select *
 from department;
+
+commit;
 
 -- 9. DEPT_COPY란 테이블에서 부서명이 RESEARCH인 부서를 제거 하시오. 
 select * from dept_copy;

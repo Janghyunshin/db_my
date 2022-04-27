@@ -400,4 +400,3 @@ select * from orders10;
 insert into orders10
 values ( 1, '11111', 'À¯°ü¼ø', 5000, default, 10);
 
-drop table products ;

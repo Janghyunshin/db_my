@@ -29,6 +29,7 @@ create table EMP (
     ename varchar2(10) null,
     dno number(2) null
     );
+-- DB 설정에 따라서 , NULL 허용 여부가 다르게 셋팅되어 있을 수 있다.
 
 desc EMP;
 
@@ -45,6 +46,10 @@ commit;
 alter table EMP
 modify ename varchar (25);
 
+desc emp
+
+select length (ename) from employee
+where length (ename) > 5
 
 -- 4. EMPLOYEE 테이블을 복사해서 EMPLOYEE2 란 이름의 테이블을 생성하되 사원번호, 이름, 급여, 부서번호 컬럼만 복사하고
     -- 새로 생성된 테이블의 컬럼명은 각각 EMP_ID, NAME, SAL, DEPT_ID 로 지정 하시오. 
@@ -55,6 +60,9 @@ from employee;
 
 select * from employee2;
 
+-- 테이블 복사시 제약조건은 복사되지 않는다.
+    -- Primary Key, Unique, not null, check,  Foreign Key, default
+    
 -- 5. EMP 테이블을 삭제 하시오. 
 drop table EMP;
 
@@ -63,21 +71,26 @@ select * from emp;
 -- 6. EMPLOYEE2 란 테이블 이름을 EMP로 변경 하시오. 
 rename EMPLOYEE2 TO EMP;
 
+desc employee2;
 desc emp;
 
 -- 7. DEPT 테이블에서 DNAME 컬럼을 제거 하시오
+select * from dept;
+
+-- 실제 운영하는 시스템에서는 레코드가 많이 들어있다. 컬럼 제거 시 부하가 많이 발생, (야간)
+
 alter table dept
 drop column dname;
 
 desc dept;
 
--- 8. DEPT 테이블에서 LOC 컬럼을 UNUSED로 표시 하시오. 
+-- 8. DEPT 테이블에서 LOC 컬럼을 UNUSED로 표시 하시오.   <== 제거할 컬럼을 비활성화 (업무 시간)
 alter table dept
 set unused (LOC);
 
 desc dept;
 
--- 9. UNUSED 커럼을 모두 제거 하시오. 
+-- 9. UNUSED 커럼을 모두 제거 하시오. ( 야간에 작업)
 alter table dept
 drop unused column;
 
@@ -89,13 +102,16 @@ create table EMP_INSERT
 as
 select *
 from EMP
-where 0 = 1;
+where 0 = 1;    -- 조건을 false 로 설정
+
+-- 테이블 컬럼을 추가할때는 NULL 허용하면서 추가해야함
 
 alter table EMP_INSERT
 add (hiredate date);
 
 select * from EMP_INSERT;
 desc EMP_INSERT;
+
 -- 2. 본인을 EMP_INSERT 테이블에 추가하되 SYSDATE를 이용해서 입사일을 오늘로 입력하시오. 
 
 insert into EMP_INSERT (EMP_ID, NAME, SAL, DEPT_ID, HIREDATE)
@@ -104,10 +120,14 @@ commit;
 
 -- 3. EMP_INSERT 테이블에 옆 사람을 추가하되 TO_DATE 함수를 이용해서 입사일을 어제로 입력하시오. 
 insert into EMP_INSERT (EMP_ID, NAME, SAL, DEPT_ID, HIREDATE)
-values (2222, '조승현', 66666, 20, to_date('2022-04-25','YYYY-MM-DD'));
+values (2222, '조승현', 66666, 20, to_date(sysdate -1, 'YY/MM/DD'));
 
 select * from EMP_INSERT;
 commit;
+
+-- 삭제 방법
+--delete emp_insert 
+--where emp_id = 2222;
 
 -- 4. employee테이블의 구조와 내용을 복사하여 EMP_COPY란 이름의 테이블을 만드시오. 
 create table EMP_COPY
@@ -121,10 +141,10 @@ commit;
 -- 5. 사원번호가 7788인 사원의 부서번호를 10번으로 수정하시오. [ EMP_COPY 테이블 사용] 
 update EMP_COPY
 set dno = 10
-where eno = 7788;
+where eno = 7788;       -- 주의 : UPDATE, DELETE 시 반드시 조건을 사용.
 
 select * from EMP_COPY;
-commit;
+commit;     -- 트랜잭션 처리 
 
 -- 6. 사원번호가 7788 의 담당 업무 및 급여를 사원번호 7499의 담당업무 및 급여와 일치 하도록 갱신하시오. [ EMP_COPY 테이블 사용] 
 
@@ -140,7 +160,7 @@ select * from EMP_COPY;
 
 update EMP_COPY 
 set dno = (select dno from EMP_COPY where eno = 7369)
-where job = 'CLERK';
+where job = (select job from EMP_COPY where eno = 7369);
 commit;
 
 -- 8. department 테이블의 구조와 내용을 복사하여 DEPT_COPY 란 이름의 테이블을 만드시오. 
